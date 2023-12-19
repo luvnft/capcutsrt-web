@@ -61,10 +61,38 @@ const generateData = (file) => {
     }
 }
 
+const findBetween = (text, separator1, separator2) => {
+    // Cari posisi awal separator1
+    var posisiSeparator1 = text.indexOf(separator1);
+
+    // Jika separator1 tidak ditemukan, kembalikan string kosong
+    if (posisiSeparator1 === -1) {
+        return "";
+    }
+
+    // Potong string dari posisi setelah separator1
+    var potongan1 = text.substring(posisiSeparator1 + separator1.length);
+
+    // Cari posisi separator2 di potongan1
+    var posisiSeparator2 = potongan1.indexOf(separator2);
+
+    // Jika separator2 tidak ditemukan, kembalikan string kosong
+    if (posisiSeparator2 === -1) {
+        return "";
+    }
+
+    // Potong string hingga posisi separator2 di potongan1
+    var hasil = potongan1.substring(0, posisiSeparator2);
+
+    return hasil;
+}
+
 
 const convertData = (subtitlesInfo, filename) => {
     // console.log(subtitlesInfo)
     const srtOut = subtitlesInfo.reduce((srt, i) => {
+        let check = findBetween(i.content, '"text":"', '"}')
+        i.content = check.length > 0 ? check : i.content
         const subtitle = `${i.subNumber}\n${i.srtTiming}\n${i.content}\n\n`
         return srt + subtitle
     }, '')
@@ -198,7 +226,7 @@ const saveTxt = (value) => {
     var anchor = document.createElement('a');
 
     let filename = $('#filename').val()
-    let format = $('#fileLayout').val()
+    let format = $('input[name=file_layout]:checked').val()
     let result = value
     // if (format == 'srt') {
     //     result = textToSRT(replaceSpacesWithNewline(result))
